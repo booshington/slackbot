@@ -1,11 +1,16 @@
 from slackclient import SlackClient
 import os, time
 
+'''
+    @author:    boosh
+    @desc:      Basic Slack Bot, reads local file oauth readonly to retrieve bot access API token, 
+                runs loop waiting for key statements, then generates responses.
+'''
+
 #retrieves token, creates slack client
 f = open("oauth","r")
 token=f.readline().splitlines()[0]
 sc = SlackClient(token)
-
 
 def main():
     #connects with token
@@ -14,7 +19,7 @@ def main():
         return
     
     #sends a message to the channel tha the bot is active
-    sc.api_call("chat.postMessage",channel="chatbots", text="G.O.L.I.A.T.H. oNLINE")
+    sc.api_call("chat.postMessage",channel="chatbots", text="G.O.L.I.A.T.H. ONLINE")
 
     #bot loop. for events, process the text and send a response, if any
     while True:
