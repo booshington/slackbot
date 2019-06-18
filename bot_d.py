@@ -1,6 +1,10 @@
 from slackclient import SlackClient
 import os, time
 
+#for deferred-exit()
+#from contextlib import ExitStack
+#from functools import partial
+
 '''
     @author:    boosh
     @desc:      Basic Slack Bot, reads local file oauth readonly to retrieve bot access API token, 
@@ -48,7 +52,13 @@ def botResponse(text):
     elif "shutdownbot99" in text:
         if DEBUG:
             print("shutting bot down")
-        return sendBotResponse(0)
+        #defers shutdown to after the return
+        #ExitStack().callback(partial(exit()))
+        #return sendBotResponse(0)
+        
+        #kept this code because it's fun, this is faster:
+        sendBotResponse(0)
+        exit()
 
 def sendBotResponse(resp):
     msg=""
@@ -63,8 +73,5 @@ def sendBotResponse(resp):
         print("Posting message: "+msg)
 
     sc.api_call("chat.postMessage",channel="chatbots", text=msg)
-
-    if resp == 0:
-        exit()
 
 main()
