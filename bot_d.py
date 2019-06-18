@@ -7,10 +7,20 @@ import os, time
                 runs loop waiting for key statements, then generates responses.
 '''
 
+DEBUG=False
+
 #retrieves token, creates slack client
 f = open("oauth","r")
+try:
+    f.readline()
+    f.seek(0)
+except FileNotFoundError as error:
+    print("Exception thrown in token file:")
+    print(error)
+    exit()
+
 token=f.readline().splitlines()[0]
-sc = SlackClient(token)
+sc=SlackClient(token)
 
 def main():
     #connects with token
@@ -26,6 +36,8 @@ def main():
         events = sc.rtm_read()
         for event in events:
             if event["type"] == "message":
+                if DEBUG:
+                    print("got user message: "+event["text"])
                 botResponse(event["text"])
         time.sleep(1)
 
@@ -33,9 +45,26 @@ def main():
 def botResponse(text):
     if "magic4321" in text:
         return sendBotResponse(1)
+    elif "shutdownbot99" in text:
+        if DEBUG:
+            print("shutting bot down")
+        return sendBotResponse(0)
 
 def sendBotResponse(resp):
-    if resp == 1:
-        sc.api_call("chat.postMessage",channel="chatbots", text="You said the magic word!")
+    msg=""
+    if resp == 0:
+        msg="Bot Shutting Down...Whyy.yy..y......----"
+    elif resp == 1:
+        msg="You said the magic word!"
+    else:
+       return
+
+    if ((DEBUG == True) and (msg != "")):
+        print("Posting message: "+msg)
+
+    sc.api_call("chat.postMessage",channel="chatbots", text=msg)
+
+    if resp == 0:
+        exit()
 
 main()
